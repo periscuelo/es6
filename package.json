@@ -23,7 +23,8 @@
   },
   "homepage": "https://github.com/Especializa/es6#readme",
   "devDependencies": {
-    "eslint": "^3.14.0",
-    "nodemon": "^1.11.0"
+    "eslint": "^5.4.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
   }
 }
