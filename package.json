@@ -19,7 +19,7 @@
     "ES2015",
     "ES6 modules",
     "Webpack",
-    "Webpack 2"
+    "Webpack 4"
   ],
   "author": "Jose Berardo Cunha",
   "license": "ISC",
@@ -28,11 +28,11 @@
   },
   "homepage": "https://github.com/Especializa/es6#readme",
   "devDependencies": {
-    "eslint": "^3.14.0",
-    "eslint-config-airbnb-base": "^11.0.1",
+    "eslint": "^5.4.0",
+    "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.2.0",
-    "http-server": "^0.9.0",
-    "nodemon": "^1.11.0",
-    "webpack": "^2.2.1"
+    "http-server": "^0.11.1",
+    "webpack": "^4.17.1",
+    "webpack-command": "^0.4.1"
   }
 }
