@@ -15,15 +15,27 @@ const config = {
     }),
   ],
   module: {
-    loaders: [
+    rules: [
       {
-        loader: 'html-es6-template-loader',
         test: /\.html$/,
         exclude(filePath) {
           return filePath === path.join(__dirname, 'app', 'index.html');
         },
-        query: {
-          transpile: true,
+        use: {
+          loader: 'html-es6-template-loader',
+          options: {
+            transpile: true,
+          },
+        },
+      },
+      {
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
         },
       },
     ],
@@ -31,6 +43,7 @@ const config = {
 };
 
 if (process.env.NODE_ENV === 'development') {
+  config.mode = 'development';
   config.watch = true;
   config.devtool = 'source-map';
 } else if (process.env.NODE_ENV === 'hot') {
@@ -39,6 +52,9 @@ if (process.env.NODE_ENV === 'development') {
     hot: true,
   };
   config.plugins.push(new webpack.HotModuleReplacementPlugin());
+} else if (process.argv[process.argv.indexOf('--mode') + 1] === 'development') {
+  config.watch = true;
+  config.devtool = 'source-map';
 }
 
 module.exports = config;
