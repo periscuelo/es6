@@ -10,6 +10,10 @@ const config = {
 };
 
 if (process.env.NODE_ENV === 'development') {
+  config.mode = 'development';
+  config.watch = true;
+  config.devtool = 'source-map';
+} else if (process.argv[process.argv.indexOf('--mode') + 1] === 'development') {
   config.watch = true;
   config.devtool = 'source-map';
 }
