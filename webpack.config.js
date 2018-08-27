@@ -11,6 +11,7 @@ const config = {
 };
 
 if (process.env.NODE_ENV === 'development') {
+  config.mode = 'development';
   config.watch = true;
   config.devtool = 'source-map';
 } else if (process.env.NODE_ENV === 'hot') {
@@ -21,6 +22,9 @@ if (process.env.NODE_ENV === 'development') {
   config.plugins = [
     new webpack.HotModuleReplacementPlugin(),
   ];
+} else if (process.argv[process.argv.indexOf('--mode') + 1] === 'development') {
+  config.watch = true;
+  config.devtool = 'source-map';
 }
 
 module.exports = config;
