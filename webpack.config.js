@@ -1,12 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
-
-const extractSass = new ExtractTextWebpackPlugin({
-  filename: '[name].[contenthash:8].bundle.css',
-  disable: false,
-});
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const config = {
   entry: './app/index.js',
@@ -15,47 +10,71 @@ const config = {
     filename: 'bundle.js',
     publicPath: '/',
   },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        styles: {
+          name: 'styles',
+          test: /\.css$/,
+          chunks: 'all',
+          enforce: true,
+        },
+      },
+    },
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'app', 'index.html'),
     }),
-    extractSass,
+    new MiniCssExtractPlugin({
+      filename: '[name].[hash].css',
+      chunkFilename: '[id].[hash].css',
+    }),
   ],
   module: {
     rules: [
       {
-        loader: 'html-es6-template-loader',
         test: /\.html$/,
         exclude(filePath) {
           return filePath === path.join(__dirname, 'app', 'index.html');
         },
-        query: {
-          transpile: true,
+        use: {
+          loader: 'html-es6-template-loader',
+          options: {
+            transpile: true,
+          },
         },
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        options: {
-          presets: ['es2015'],
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
         },
-        exclude: /node_modules/,
       },
       {
-        test: /\.s[ac]ss$/,
-        loader: extractSass.extract({
-          loader: [
-            { loader: 'css-loader' },
-            { loader: 'sass-loader' },
-          ],
-          fallbackLoader: 'style-loader',
-        }),
+        test: /\.(s[ca]ss)$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader',
+        ],
+      },
+      {
+        test: /\.(jpe?g|png|gif)/,
+        use: {
+          loader: 'url-loader',
+        },
       },
     ],
   },
 };
 
 if (process.env.NODE_ENV === 'development') {
+  config.mode = 'development';
   config.watch = true;
   config.devtool = 'source-map';
 } else if (process.env.NODE_ENV === 'hot') {
@@ -64,6 +83,9 @@ if (process.env.NODE_ENV === 'development') {
     hot: true,
   };
   config.plugins.push(new webpack.HotModuleReplacementPlugin());
+} else if (process.argv[process.argv.indexOf('--mode') + 1] === 'development') {
+  config.watch = true;
+  config.devtool = 'source-map';
 }
 
 module.exports = config;
