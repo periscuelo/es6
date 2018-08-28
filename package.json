@@ -6,13 +6,13 @@
   "scripts": {
     "start": "http-server",
     "lint": "eslint",
-    "build": "NODE_ENV=development webpack",
-    "build:prod": "webpack",
+    "dev": "webpack --mode development",
+    "build": "webpack --mode production",
     "nodemon": "nodemon",
-    "serve": "webpack-dev-server",
-    "hot": "NODE_ENV=hot webpack-dev-server",
-    "express": "NODE_ENV=development PORT=8080 node server.js",
-    "express:prod": "npm run build:prod && PORT=8081 node server.js"
+    "serve": "webpack-dev-server --mode development",
+    "hot": "cross-env NODE_ENV=hot webpack-dev-server --mode development",
+    "express": "cross-env NODE_ENV=development PORT=8080 node server.js",
+    "express:prod": "npm run build && cross-env PORT=8081 node server.js"
   },
   "repository": {
     "type": "git",
