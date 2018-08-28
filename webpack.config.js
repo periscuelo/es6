@@ -27,8 +27,8 @@ const config = {
       template: path.join(__dirname, 'app', 'index.html'),
     }),
     new MiniCssExtractPlugin({
-      filename: '[name].[hash].css',
-      chunkFilename: '[id].[hash].css',
+      filename: '[name].[hash:8].css',
+      chunkFilename: '[id].[hash:8].css',
     }),
   ],
   module: {
@@ -64,10 +64,22 @@ const config = {
         ],
       },
       {
-        test: /\.(jpe?g|png|gif)/,
-        use: {
-          loader: 'url-loader',
-        },
+        test: /\.(jpe?g|png|gif|svg)/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 5000,
+              name: '[name].[hash:8].[ext]',
+            },
+          },
+          {
+            loader: 'image-webpack-loader',
+            options: {
+              mozjpeg: { quality: 65 },
+            },
+          },
+        ],
       },
     ],
   },
