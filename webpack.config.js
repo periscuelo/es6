@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const extractSass = new ExtractTextWebpackPlugin({
   filename: '[name].[contenthash:8].bundle.css',
@@ -15,58 +15,73 @@ const config = {
     filename: 'bundle.js',
     publicPath: '/',
   },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        styles: {
+          name: 'styles',
+          test: /\.css$/,
+          chunks: 'all',
+          enforce: true,
+        },
+      },
+    },
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'app', 'index.html'),
     }),
-    extractSass,
+    new MiniCssExtractPlugin({
+      filename: '[name].[hash:8].css',
+      chunkFilename: '[id].[hash:8].css',
+    }),
   ],
   module: {
     rules: [
       {
-        loader: 'html-es6-template-loader',
         test: /\.html$/,
         exclude(filePath) {
           return filePath === path.join(__dirname, 'app', 'index.html');
         },
-        query: {
-          transpile: true,
+        use: {
+          loader: 'html-es6-template-loader',
+          options: {
+            transpile: true,
+          },
         },
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        options: {
-          presets: ['es2015'],
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
         },
-        exclude: /node_modules/,
       },
       {
-        test: /\.s[ac]ss$/,
-        loader: extractSass.extract({
-          use: [
-            { loader: 'css-loader' },
-            { loader: 'sass-loader' },
-          ],
-          fallback: 'style-loader',
-        }),
+        test: /\.(s[ca]ss)$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader',
+        ],
       },
       {
         test: /\.(jpe?g|png|gif|svg)/,
         use: [
           {
             loader: 'url-loader',
-            query: {
+            options: {
               limit: 5000,
               name: '[name].[hash:8].[ext]',
             },
           },
           {
             loader: 'image-webpack-loader',
-            query: {
-              mozjpeg: {
-                quality: 65,
-              },
+            options: {
+              mozjpeg: { quality: 65 },
             },
           },
         ],
@@ -76,6 +91,7 @@ const config = {
 };
 
 if (process.env.NODE_ENV === 'development') {
+  config.mode = 'development';
   config.watch = true;
   config.devtool = 'source-map';
 } else if (process.env.NODE_ENV === 'hot') {
@@ -84,6 +100,9 @@ if (process.env.NODE_ENV === 'development') {
     hot: true,
   };
   config.plugins.push(new webpack.HotModuleReplacementPlugin());
+} else if (process.argv[process.argv.indexOf('--mode') + 1] === 'development') {
+  config.watch = true;
+  config.devtool = 'source-map';
 }
 
 module.exports = config;
