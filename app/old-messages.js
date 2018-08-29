@@ -10,6 +10,6 @@ const messagesContent = messages
   .reduce((result, current) => result + current);
 
 /* eslint no-undef: 0 */
-document.getElementById('messages').innerHTML = messagesContent;
+document.querySelector('#messages').innerHTML = messagesContent;
 
 console.log('old-messages');
