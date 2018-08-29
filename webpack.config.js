@@ -4,15 +4,23 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const config = {
-  entry: './app/index.js',
+  entry: {
+    main: './app/index.js',
+    oldMessages: './app/old-messages.js',
+  },
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
+    filename: '[name].[hash:8].bundle.js',
     publicPath: '/',
   },
   optimization: {
     splitChunks: {
       cacheGroups: {
+        commons: {
+          name: 'commons',
+          chunks: 'all',
+          minChunks: 2,
+        },
         styles: {
           name: 'styles',
           test: /\.css$/,
@@ -25,6 +33,13 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'app', 'index.html'),
+      filename: 'index.html',
+      chunks: ['commons', 'main'],
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'app', 'old-messages.html'),
+      filename: 'old-messages.html',
+      chunks: ['commons', 'oldMessages'],
     }),
     new MiniCssExtractPlugin({
       filename: '[name].[hash:8].css',
