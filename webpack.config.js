@@ -2,6 +2,14 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const UglifyJsWebpackPlugin = require('uglifyjs-webpack-plugin');
+const CompressionWebpackPlugin = require('compression-webpack-plugin');
+
+const minify = {
+  collapseWhitespace: true,
+  conservativeCollapse: true,
+  removeComments: true,
+};
 
 const config = {
   entry: {
@@ -35,15 +43,21 @@ const config = {
       template: path.join(__dirname, 'app', 'index.html'),
       filename: 'index.html',
       chunks: ['commons', 'main'],
+      minify,
     }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'app', 'old-messages.html'),
       filename: 'old-messages.html',
       chunks: ['commons', 'oldMessages'],
+      minify,
     }),
     new MiniCssExtractPlugin({
       filename: '[name].[hash:8].css',
       chunkFilename: '[id].[hash:8].css',
+    }),
+    new UglifyJsWebpackPlugin(),
+    new CompressionWebpackPlugin({
+      asset: '[path].gz',
     }),
   ],
   module: {
@@ -66,7 +80,9 @@ const config = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env'],
+            presets: [
+              ['@babel/preset-env', { modules: false }],
+            ],
           },
         },
       },
