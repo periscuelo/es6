@@ -3,11 +3,6 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const extractSass = new ExtractTextWebpackPlugin({
-  filename: '[name].[contenthash:8].bundle.css',
-  disable: false,
-});
-
 const config = {
   entry: './app/index.js',
   output: {
